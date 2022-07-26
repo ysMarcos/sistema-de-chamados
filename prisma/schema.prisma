@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Cliente {
+  id Int @id @default(autoincrement()) 
+  nome String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+  senha String @db.VarChar(100)
+  chamados Chamado[]
+  mensagem Mensagem[]
+}
+
+model Suporte {
+  id Int @id @default(autoincrement()) 
+  nome String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+  senha String @db.VarChar(100)
+  chamados Chamado[]
+  mensagem Mensagem[]
+}
+
+model Chamado {
+  id Int @id @default(autoincrement())
+  titulo String @db.VarChar(100)
+  descricao String @db.Text
+  data_abertura DateTime @default(now())
+  data_fechamento DateTime?
+  isFechado Boolean @default(false)
+  cliente Cliente @relation(fields: [cliente_id], references: [id])
+  cliente_id Int
+  suporte Suporte @relation(fields: [suporte_id], references: [id])
+  suporte_id Int
+  mensagem Mensagem[]
+}
+
+model Mensagem{
+  id Int @id @default(autoincrement())
+  chamado Chamado @relation(fields: [chamado_id], references: [id])
+  chamado_id Int
+  cliente Cliente? @relation(fields: [cliente_id], references: [id])
+  cliente_id Int?
+  suporte Suporte? @relation(fields: [suporte_id], references: [id])
+  suporte_id Int?
+  dataMensagem DateTime @default(now())
+  mensagem String @db.Text
+}
